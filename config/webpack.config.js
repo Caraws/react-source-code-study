@@ -315,10 +315,15 @@ module.exports = function (webpackEnv) {
         'react-native': 'react-native-web',
         // Allows for better profiling with ReactDevTools
         ...(isEnvProductionProfile && {
-          'react-dom$': 'react-dom/profiling',
+          // 'react-dom$': 'react-dom/profiling',
           'scheduler/tracing': 'scheduler/tracing-profiling',
         }),
         ...(modules.webpackAliases || {}),
+        'react': path.resolve(__dirname, '../src/react/packages/react'),
+        'shared': path.resolve(__dirname, '../src/react/packages/shared'),
+        // 'scheduler': path.resolve(__dirname, '../src/react/packages/scheduler'),
+        'react-dom': path.resolve(__dirname, '../src/react/packages/react-dom'),
+        'react-reconciler': path.resolve(__dirname, '../src/react/packages/react-reconciler'),
       },
       plugins: [
         // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -725,7 +730,7 @@ module.exports = function (webpackEnv) {
             infrastructure: 'silent',
           },
         }),
-      !disableESLintPlugin && false &&
+      !disableESLintPlugin && false && // closed eslint
         new ESLintPlugin({
           // Plugin options
           extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
