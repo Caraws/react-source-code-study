@@ -1,70 +1,88 @@
-# Getting Started with Create React App
+# React Source Code Study
+It's base on React v18.2.0
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Setup for local debug environment
+1. git clone [git@github.com:facebook/react.git](git@github.com:facebook/react.git)
+2. Use the `create-react-app` cli to create a new react application(`react-source-code-study` in my case)
+3. Move the `packages` folder which is under the clone source code to the `react-source-code-study/src` folder
+    ```
+   // Then the folder should be look like this
+    +-- README.md
+    +-- .gitignore
+    +-- package.json
+    +-- src
+    |   +-- index.js
+    |   +-- react
+        |   +-- packages
+            |   +-- [React Source Code]
+    +-- scripts
+    |   +-- ...
+    +-- public
+    |   +-- ...
+    +-- config
+    |   +-- env.js
+    |   +-- webpack.config.js
+    |   +-- ...
+    ```
+4. Update `alias` in `config/webpack.config.js` 
+   ```
+   alias: {
+        // ...
+        ...(isEnvProductionProfile && {
+          - // 'react-dom$': 'react-dom/profiling',
+          ...
+        }),
+        ...,
+        + 'react': path.resolve(__dirname, '../src/react/packages/react'),
+        + 'shared': path.resolve(__dirname, '../src/react/packages/shared'),
+        + 'react-dom': path.resolve(__dirname, '../src/react/packages/react-dom'),
+        + 'react-reconciler': path.resolve(__dirname, '../src/react/packages/react-reconciler'),
+   }
+   ```
+5. Add env in `config/env.js` and `package.json`
+   ```javascript
+   // In env.js
+   const stringified = {
+       'process.env': Object.keys(raw).reduce((env, key) => {
+         env[key] = JSON.stringify(raw[key]);
+         return env;
+       }, {}),
+      // Add env
+       __DEV__: true,
+       __PROFILE__: true,
+       __UMD__: true,
+       __EXPERIMENTAL__: true,
+     };
+   
+   // in package.json
+   "eslintConfig": {
+    // ...
+    "globals": {
+      "__DEV__": true,
+      "__PROFILE__": true,
+      "__UMD__": true,
+      "__EXPERIMENTAL__": true
+    }
+   }
+   ```
+6. `yarn start` to fixed runtime errors
+   ```js
+   // 1. add react export default in src/react/packages/react/index.js
+   export * as default from './src/React'
+   
+   // 2. add reactDOM export default in src/react/packages/react-dom/client.js
+   export default {
+      createRoot,
+      hydrateRoot
+   }
+   
+   // 3. add fiberHostConfig in src/react/packages/react-reconciler/src/ReactFiberHostConfig.js
+   
+   // REMOVE THIS ERROR: 'throw new Error('This module must be shimmed by a specific renderer.');'
+   // Then add host config for browser
+   export * from './forks/ReactFiberHostConfig.dom'
+   ```
 
-## Available Scripts
+### Then you can debug anywhere you want💃🏻. Enjoy😄
 
-In the project directory, you can run:
 
-### `yarn start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
